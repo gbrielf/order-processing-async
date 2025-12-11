@@ -3,7 +3,7 @@ from pika import PlainCredentials
 import json
 import time
 
-RABBITMQ_HOST = 'localhost'
+RABBITMQ_HOST = 'host.docker.internal'
 QUEUE_NAME = 'pedidos_pendentes'
 RABBITMQ_USER = 'user'
 RABBITMQ_PASS = 'password'
