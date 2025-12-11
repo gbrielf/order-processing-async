@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 
 # Configuração do RabbitMQ
-RABBITMQ_HOST = 'loscalhost'
+RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'pedidos_pendentes'
 RABBITMQ_USER = 'user'
 RABBITMQ_PASS = 'password'
@@ -30,7 +30,7 @@ def publish_order(order_data):
         # terceiro: publicar a mensagem(transformada em JSON string)
         channel.basic_publish(
             exchange='',  # usa um exchange padrão(default)
-            routing_ke=QUEUE_NAME,
+            routing_key=QUEUE_NAME,
             body=json.dumps(order_data),
             properties=pika.BasicProperties(
                 delivery_mode=pika.DeliveryMode.Persistent  # Mensagem persistente
@@ -38,7 +38,7 @@ def publish_order(order_data):
         )
         print(f" [x] Pedido Publicado: {order_data.get('order_id')}")
         return True
-    except pika.excepctions.AMQPConnectionError as e:
+    except pika.exceptions.AMQPConnectionError as e:
         print(f"[!] Erro na conexão com o RabbitMQ: {e}")
         return False
     
@@ -50,7 +50,7 @@ def process_order():
     
     order_data = request.get_json()
 
-    # Adicionando um timestamp para facilitra a demonstração
+    # Adicionando um timestamp para facilitar a demonstração
     import datetime
     order_data['timestamp'] = datetime.datetime.now().isoformat()
 
