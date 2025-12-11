@@ -2,10 +2,9 @@ import pika
 from pika import PlainCredentials
 import json
 import time
-
 RABBITMQ_USER = 'user'
 RABBITMQ_PASS = 'password'
-RABBITMQ_HOST = 'host.docker.internal'
+RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'pedidos_pendentes'
 
 def callback_stock(ch, method, properties, body):

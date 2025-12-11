@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 
 # Configuração do RabbitMQ
-RABBITMQ_HOST = 'host.docker.internal'
+RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'pedidos_pendentes'
 RABBITMQ_USER = 'user'
 RABBITMQ_PASS = 'password'
@@ -37,10 +37,10 @@ def publish_order(order_data):
                 delivery_mode=pika.DeliveryMode.Persistent  # Mensagem persistente
             )
         )
-        print(f" [x] Pedido Publicado: {order_data.get('order_id')}", flush=True)
+        print(f" [x] Pedido Publicado: {order_data.get('order_id')}")
         return True
     except pika.exceptions.AMQPConnectionError as e:
-        print(f"[!] Erro na conexão com o RabbitMQ: {e}", flush=True)
+        print(f"[!] Erro na conexão com o RabbitMQ: {e}")
         return False
     finally:
         # IMPORTANTE: sempre fechar a conexão para evitar vazamento de recursos
@@ -58,8 +58,6 @@ def process_order():
     # Adicionando um timestamp para facilitar a demonstração
     import datetime
     order_data['timestamp'] = datetime.datetime.now().isoformat()
-    
-    print(f" [→] Recebido pedido: {order_data.get('order_id')}", flush=True)
 
     if publish_order(order_data):
         # A requisição foi aceita no processamento, mas ainda não foi concluída
