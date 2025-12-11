@@ -1,7 +1,9 @@
 import pika
+from pika import PlainCredentials
 import json
 import time
-
+RABBITMQ_USER = 'user'
+RABBITMQ_PASS = 'password'
 RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'pedidos_pendentes'
 
@@ -26,10 +28,12 @@ def callback_stock(ch, method, properties, body):
 
 def start_consumer_stock():
     print('[Estoque] Tentando conectar ao RabbitMQ...')
+    # Definindo as credenciais
+    credentials = PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
     # Conexão (com retires simples, se necessário)
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host=RABBITMQ_HOST)
+        pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
     )
     channel = connection.channel()
 

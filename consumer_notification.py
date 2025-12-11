@@ -1,9 +1,12 @@
 import pika
+from pika import PlainCredentials
 import json
 import time
 
 RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'pedidos_pendentes'
+RABBITMQ_USER = 'user'
+RABBITMQ_PASS = 'password'
 
 def callback_notification(ch, method, properties, body):
     # Callback chamado quando uma mensagem é recebida na fila
@@ -25,9 +28,11 @@ def callback_notification(ch, method, properties, body):
 
 def start_consumer_notification():
     print('[Notificação] Tentando conectar ao RabbitMQ...')
-    
+    # Definindo as credenciais
+    credentials = PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host=RABBITMQ_HOST)
+        pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
     )
     channel = connection.channel()
 
@@ -46,5 +51,5 @@ def start_consumer_notification():
     print('[Notificação] [*] Aguardando pedidos. Pressione CNTRL+C para sair.')
     channel.start_consuming()
 
-if __name__ == '__main__'
+if __name__ == '__main__':
     start_consumer_notification()

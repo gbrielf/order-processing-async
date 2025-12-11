@@ -1,6 +1,7 @@
 # recebe a requisição e publica a mensagem
 from flask import Flask, request, jsonify
 import pika
+from pika import PlainCredentials
 import json
 
 app = Flask(__name__)
@@ -8,13 +9,17 @@ app = Flask(__name__)
 # Configuração do RabbitMQ
 RABBITMQ_HOST = 'loscalhost'
 QUEUE_NAME = 'pedidos_pendentes'
+RABBITMQ_USER = 'user'
+RABBITMQ_PASS = 'password'
 
 # Função para publicar mensagem
 def publish_order(order_data):
     try:
+        # Definindo as credenciais
+        credentials = PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
         # primeiro: conexão com o Broker (MOM)
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=RABBITMQ_HOST)
+            pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
         )
         channel = connection.channel()
 
