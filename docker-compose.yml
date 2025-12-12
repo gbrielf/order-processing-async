@@ -1,13 +1,51 @@
 version: '3.8'
+
 services:
+  # SERVIÇO MOM (RABBITMQ)
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq_mom
+    # As portas continuam expostas para poder checar o dashboard (se o Codespace permitir)
     ports:
-      # porta padrão para o protocolo AMQP (comunicação do pika)
       - "5672:5672"
-      # porta para a interface web de gerenciamento
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
+    restart: always
+
+  # SERVIÇO PRODUTOR (API GATEWAY - FLASK)
+  producer:
+    build: . # Usa o Dockerfile acima
+    command: python api_gateway_producer.py
+    volumes:
+      - .:/app # Mapeia sua pasta de código para dentro do container
+    ports:
+      - "5000:5000" # Expõe o Flask para que você possa acessar com curl
+    depends_on:
+      - rabbitmq
+    environment:
+      # CRUCIAL: O host AGORA é o nome do serviço do RabbitMQ na rede Docker
+      RABBITMQ_HOST: rabbitmq
+
+  # SERVIÇO CONSUMIDOR ESTOQUE
+  consumer_stock:
+    build: .
+    command: python consumer_stock.py
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: rabbitmq
+
+  # SERVIÇO CONSUMIDOR NOTIFICAÇÃO
+  consumer_notification:
+    build: .
+    command: python consumer_notification.py
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: rabbitmq

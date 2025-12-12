@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 
 # Configuração do RabbitMQ
-RABBITMQ_HOST = 'localhost'
+RABBITMQ_HOST = 'rabbitmq'
 QUEUE_NAME = 'pedidos_pendentes'
 RABBITMQ_USER = 'user'
 RABBITMQ_PASS = 'password'
